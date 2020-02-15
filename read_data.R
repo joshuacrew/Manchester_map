@@ -23,6 +23,10 @@ holland_barrett <- read.csv("holland_barrett_locations.csv", stringsAsFactors = 
 supermarket_list <- list(Aldi = aldi, Asda = asda, Tesco = tesco, Lidl = lidl, "Holland and Barrett" = holland_barrett)
 supermarkets <- bind_rows(supermarket_list, .id = "supermarket")
 
+# gyms
+puregym <- read.csv("pure_gym_locations.csv", stringsAsFactors = FALSE)
+puregym[, "X"] <- "Pure Gym"
+
 
 # Leaflet map -------------------------------------------------------------
 
@@ -33,9 +37,16 @@ leaflet() %>%
                     lng = supermarkets$Long, 
                     group = supermarkets$supermarket,
                     icon = awesomeIcons(icon ="shopping-cart",
-                    library = "glyphicon")) %>%
+                                        library = "fa")
+                    ) %>%
+  addAwesomeMarkers(lat = puregym$Lat,
+                    lng = puregym$Long,
+                    group = puregym$X,
+                    icon = awesomeIcons(icon = "heartbeat",
+                                        library = "fa")
+                    ) %>%
   addLayersControl(
-    overlayGroups = supermarkets$supermarket,  # add these layers
+    overlayGroups = c(supermarkets$supermarket, puregym$X),  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
 )
 
