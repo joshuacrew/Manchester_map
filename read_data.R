@@ -27,26 +27,48 @@ supermarkets <- bind_rows(supermarket_list, .id = "supermarket")
 puregym <- read.csv("pure_gym_locations.csv", stringsAsFactors = FALSE)
 puregym[, "X"] <- "Pure Gym"
 
+# transport
+transport <- read.csv("metro_rail_stops.csv", stringsAsFactors = FALSE)
+tram <- subset(transport, transport$NETTYP=="M")
+train <- subset(transport, transport$NETTYP=="R")
+tram[tram$NETTYP=="M", "NETTYP"] <- "Tram"
+train[train$NETTYP=="R", "NETTYP"] <- "Train"
 
 # Leaflet map -------------------------------------------------------------
 
 leaflet() %>%
   addProviderTiles(providers$OpenStreetMap) %>%
   setView(-2.2426, 53.4808, zoom = 11) %>%
+  # supermarkets
   addAwesomeMarkers(lat = supermarkets$Lat, 
                     lng = supermarkets$Long, 
                     group = supermarkets$supermarket,
                     icon = awesomeIcons(icon ="shopping-cart",
                                         library = "fa")
                     ) %>%
+  # gyms
   addAwesomeMarkers(lat = puregym$Lat,
                     lng = puregym$Long,
                     group = puregym$X,
                     icon = awesomeIcons(icon = "heartbeat",
                                         library = "fa")
                     ) %>%
+  # transport
+  addAwesomeMarkers(lat = tram$GPSLAT,
+                    lng = tram$GPSLON,
+                    group = tram$NETTYP,
+                    icon = awesomeIcons(icon = "subway",
+                                        library = "fa")
+                    ) %>%
+  addAwesomeMarkers(lat = train$GPSLAT,
+                    lng = train$GPSLON,
+                    group = train$NETTYP,
+                    icon = awesomeIcons(icon = "train",
+                                        library = "fa")
+                    
+  ) %>%
   addLayersControl(
-    overlayGroups = c(supermarkets$supermarket, puregym$X),  # add these layers
+    overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP),  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
 )
 
