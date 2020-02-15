@@ -29,8 +29,11 @@ supermarkets <- bind_rows(supermarket_list, .id = "supermarket")
 leaflet() %>%
   addProviderTiles(providers$OpenStreetMap) %>%
   setView(-2.2426, 53.4808, zoom = 11) %>%
-  addMarkers(
-    lat = supermarkets$Lat, lng = supermarkets$Long, group = supermarkets$supermarket) %>%
+  addAwesomeMarkers(lat = supermarkets$Lat, 
+                    lng = supermarkets$Long, 
+                    group = supermarkets$supermarket,
+                    icon = awesomeIcons(icon ="shopping-cart",
+                    library = "glyphicon")) %>%
   addLayersControl(
     overlayGroups = supermarkets$supermarket,  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
