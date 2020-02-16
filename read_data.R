@@ -8,6 +8,7 @@ library("leaflet")
 library("dplyr")
 library("rgdal")
 library("sp")
+library("stringr")
 
 # Read in data ------------------------------------------------------------
 setwd("data")
@@ -34,6 +35,18 @@ tram <- subset(transport, transport$NETTYP=="M")
 train <- subset(transport, transport$NETTYP=="R")
 tram[tram$NETTYP=="M", "NETTYP"] <- "Tram"
 train[train$NETTYP=="R", "NETTYP"] <- "Train"
+
+# IMD
+imd <- readOGR(".", "Lower_Super_Output_Area_LSOA_IMD2019__WGS84")
+imd$IMDDecil <- as.numeric(imd$IMDDecil)
+imd$IMDDecil <- ifelse(imd$IMDDecil >= 9, 9, imd$IMDDecil)
+imd$IMDDecil <- as.factor(imd$IMDDecil)
+imd$lsoa11nm <- as.character(imd$lsoa11nm)
+imd$name <- str_detect(imd$lsoa11nm, "Rochdale|Oldham|Salford|Manchester|Bury|Trafford|Stockport|Tameside")
+imd <- imd[imd$name == TRUE, ]
+
+# colour palette
+pal <- colorFactor("RdYlGn", NULL, n = 8)
 
 # Leaflet map -------------------------------------------------------------
 
@@ -68,6 +81,13 @@ leaflet() %>%
                                         library = "fa")
                     
   ) %>%
+  addProviderTiles(providers$OpenStreetMap) %>%
+  addPolygons(data = imd,
+              fillColor = ~pal(IMDDecil),
+              fillOpacity = 0.7,
+              color = "grey",
+              weight = 0.5,
+              label = ~lsoa11nm) %>%
   addLayersControl(
     overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP),  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
