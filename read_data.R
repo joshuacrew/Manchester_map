@@ -9,6 +9,7 @@ library("dplyr")
 library("rgdal")
 library("sp")
 library("stringr")
+library("ggmap")
 
 # Read in data ------------------------------------------------------------
 setwd("data")
@@ -47,6 +48,21 @@ imd <- imd[imd$name == TRUE, ]
 
 # colour palette
 pal <- colorFactor("RdYlGn", NULL, n = 8)
+pal2 <- colorFactor("RdYlGn", NULL, n = 8, reverse = TRUE)
+
+# House price data
+ppd <- read.csv("ppd_data.csv", stringsAsFactors = FALSE)
+postcode_lookup <- read.csv("NSPL_NOV_2019_UK_M.csv", stringsAsFactors = FALSE)
+
+ppd_pc <- merge(ppd, postcode_lookup, by.x = "postcode", by.y = "pcd", all.x = TRUE)
+ppd_pc <- ppd_pc[, c("postcode", "lat", "long", "price_paid", "unique_id", "deed_date", "property_type", "new_build", "street", "locality", "town", "district", "lsoa11")]
+ppd_lsoa <- ppd_pc[, c("price_paid", "lsoa11")]
+ppd_lsoa <- ppd_lsoa %>%
+  group_by(lsoa11) %>%
+  summarise(average = mean(price_paid))
+imd$lsoa11cd <- as.character(imd$lsoa11cd)
+lsoa_map <- merge(imd, ppd_lsoa, by.x = "lsoa11cd", by.y = "lsoa11")
+lsoa_map$average <- as.character(round(lsoa_map$average))
 
 # Leaflet map -------------------------------------------------------------
 
@@ -79,17 +95,27 @@ leaflet() %>%
                     group = train$NETTYP,
                     icon = awesomeIcons(icon = "train",
                                         library = "fa")
-                    
   ) %>%
-  addProviderTiles(providers$OpenStreetMap) %>%
   addPolygons(data = imd,
+              group = "IMD",
               fillColor = ~pal(IMDDecil),
               fillOpacity = 0.7,
               color = "grey",
               weight = 0.5,
               label = ~lsoa11nm) %>%
+  addPolygons(data = lsoa_map,
+              group = "Average House Price",
+              fillColor = ~pal2(average),
+              fillOpacity = 0.7,
+              color = "grey",
+              weight = 0.5,
+              label = ~lsoa11nm,
+              popup = ~paste0("Average house price: £", average)) %>%
   addLayersControl(
+    baseGroups = c("Average House Price", "IMD"),
     overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP),  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
 )
+  
+
 
