@@ -20,7 +20,8 @@ asda <- read.csv("asda_locations.csv", stringsAsFactors = FALSE)
 tesco <- read.csv("tesco_locations.csv", stringsAsFactors = FALSE)
 lidl <- read.csv("lidl_locations.csv", stringsAsFactors = FALSE)
 holland_barrett <- read.csv("holland_barrett_locations.csv", stringsAsFactors = FALSE)
-supermarket_list <- list(Aldi = aldi, Asda = asda, Tesco = tesco, Lidl = lidl, "Holland and Barrett" = holland_barrett)
+marks_and_spencer <- read.csv("m_and_s_locations.csv", stringsAsFactors = FALSE)
+supermarket_list <- list(Aldi = aldi, Asda = asda, Tesco = tesco, Lidl = lidl, "Holland and Barrett" = holland_barrett, "Marks and Spencer" = marks_and_spencer)
 supermarkets <- bind_rows(supermarket_list, .id = "supermarket")
 
 # gyms
