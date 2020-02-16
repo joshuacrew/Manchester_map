@@ -11,7 +11,7 @@ https://joshuacrew.github.io/Manchester_map/
 	- [X]  Tram, Train https://mappinggm.org.uk/metadata/ 
 	- [ ]  trafford park line 2020 
 	- [ ]  https://data.gov.uk/dataset/655a1680-fe40-44c0-832f-131067256db6/gm-cycle-routes
-- [X] Supermarkets - Aldi, lidl, Asda, Tesco, Holland & Barrett
+- [X] Supermarkets - Aldi, lidl, Asda, Tesco, Holland & Barrett, m&s
 - [ ] English IMD - gov
 - [ ] Crime rate - manchester police - https://data.police.uk/data/
 - [ ] Journey fares 
