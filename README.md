@@ -4,8 +4,7 @@ https://joshuacrew.github.io/Manchester_map/
 
 - [X] Detailed satelite map manchester - OSM, 
 
-- [ ] House prices 
-	- [ ]  Historical Price Paid https://landregistry.data.gov.uk/app/ppd/, https://data.gov.uk/dataset/4c9b7641-cf73-4fd9-869a-4bfeed6d440e/hm-land-registry-price-paid-data
+- [X] House prices - Historical Price Paid https://landregistry.data.gov.uk/app/ppd/
 - [ ] Tramstops, freebus, train stations to piccadilly , cycle network 
 	- [X]  Tram, Train https://mappinggm.org.uk/metadata/ 
 	- [ ]  trafford park line 2020 
