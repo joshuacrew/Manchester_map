@@ -52,16 +52,19 @@ pal2 <- colorFactor("RdYlGn", NULL, n = 8, reverse = TRUE)
 
 # House price data
 ppd <- read.csv("ppd_data.csv", stringsAsFactors = FALSE)
-postcode_lookup <- read.csv("NSPL_NOV_2019_UK_M.csv", stringsAsFactors = FALSE)
+postcode_lookup <- read.csv("TRIMMED_PCD_OA_LSOA_MSOA_LAD_NOV19_UK_LU.csv", stringsAsFactors = FALSE)
 
-ppd_pc <- merge(ppd, postcode_lookup, by.x = "postcode", by.y = "pcd", all.x = TRUE)
-ppd_pc <- ppd_pc[, c("postcode", "lat", "long", "price_paid", "unique_id", "deed_date", "property_type", "new_build", "street", "locality", "town", "district", "lsoa11")]
-ppd_lsoa <- ppd_pc[, c("price_paid", "lsoa11")]
+ppd_pc <- merge(ppd, postcode_lookup, by.x = "postcode", by.y = "pcds", all.x = TRUE)
+ppd_lsoa <- ppd_pc[, c("price_paid", "lsoa11nm")]
+
+ppd_lsoa$lsoa11nm <- str_trim(ppd_lsoa$lsoa11nm)
 ppd_lsoa <- ppd_lsoa %>%
-  group_by(lsoa11) %>%
-  summarise(average = mean(price_paid))
+  group_by(lsoa11nm) %>%
+  summarise(average = mean(price_paid, na.rm = TRUE))
+
 imd$lsoa11cd <- as.character(imd$lsoa11cd)
-lsoa_map <- merge(imd, ppd_lsoa, by.x = "lsoa11cd", by.y = "lsoa11")
+
+lsoa_map <- merge(imd, ppd_lsoa, by = "lsoa11nm")
 lsoa_map$average <- as.character(round(lsoa_map$average))
 
 # Leaflet map -------------------------------------------------------------
@@ -116,6 +119,3 @@ leaflet() %>%
     overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP),  # add these layers
     options = layersControlOptions(collapsed = FALSE)  # expand on hover?
 )
-  
-
-
