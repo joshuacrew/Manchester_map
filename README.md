@@ -15,8 +15,8 @@ https://joshuacrew.github.io/Manchester_map/
 - [ ] Journey fares 
 	- [ ]  Tram https://data.gov.uk/dataset/b087c8be-5a01-4deb-8280-9627b42b055f/manchester-metrolink-fares-tables
 	- [ ]  Rail
-- [ ] Gym 
-	- [ ]  sports premises https://www.activeplacespower.com/OpenData/download
+- [X] Gym 
+	- [X]  sports premises https://www.activeplacespower.com/OpenData/download
 	- [X] pure gym
 - [ ] Bars/Restaurants - google, tripadvisor
 - [ ] Greenspace - google, gov 
