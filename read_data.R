@@ -26,9 +26,22 @@ marks_and_spencer <- read.csv("m_and_s_locations.csv", stringsAsFactors = FALSE)
 supermarket_list <- list(Aldi = aldi, Asda = asda, Tesco = tesco, Lidl = lidl, "Holland and Barrett" = holland_barrett, "Marks and Spencer" = marks_and_spencer)
 supermarkets <- bind_rows(supermarket_list, .id = "supermarket")
 
-# gyms
+# gyms/sports facilities
 puregym <- read.csv("pure_gym_locations.csv", stringsAsFactors = FALSE)
 puregym[, "X"] <- "Pure Gym"
+sites <- read.csv("Sites.csv", stringsAsFactors = FALSE)
+facilities <- read.csv("Facilities.csv", stringsAsFactors = FALSE)
+facility_type <- read.csv("FacilityType.csv", stringsAsFactors = FALSE)
+geographic <- read.csv("Geographic.csv", stringsAsFactors = FALSE)
+# select certain rows and columns
+facility_type <- facility_type[facility_type$ï..FacTypeID %in% c(2, 6, 7, 8, 10, 12), c("ï..FacTypeID", "FacTypeDescription")]
+facilities <- facilities[facilities$ClosureReason %in% "", c("ï..FACILITYID","SiteID","FacTypeID")]
+geographic <- geographic[geographic$LDP.Name == "Greater Manchester" , c("ï..SiteID","FACILITYID","Latitude", "Longitude")]
+sites <- sites[, c("ï..SiteID", "SiteName")]
+# merge datasets
+merge1 <- merge(facility_type, facilities, by.x = "ï..FacTypeID", by.y = "FacTypeID")
+merge2 <- merge(geographic, merge1, by.x = "FACILITYID", by.y = "ï..FACILITYID")
+sports_sites <- merge(merge2, sites, by = "ï..SiteID")
 
 # transport
 transport <- read.csv("metro_rail_stops.csv", stringsAsFactors = FALSE)
@@ -98,7 +111,14 @@ leaflet() %>%
                     group = train$NETTYP,
                     icon = awesomeIcons(icon = "train",
                                         library = "fa")
-  ) %>%
+                    ) %>%
+  addAwesomeMarkers(lat = sports_sites$Latitude,
+                    lng = sports_sites$Longitude,
+                    group = sports_sites$FacTypeDescription,
+                    icon = awesomeIcons(icon ="heart",
+                                        library = "fa"),
+                    popup = paste("Facility type:", sports_sites$FacTypeDescription, "\n", "Site name:", sports_sites$SiteName)
+                    ) %>%
   addPolygons(data = imd,
               group = "IMD",
               fillColor = ~pal(IMDDecil),
@@ -116,6 +136,10 @@ leaflet() %>%
               popup = ~paste0("Average house price: £", average)) %>%
   addLayersControl(
     baseGroups = c("Average House Price", "IMD"),
-    overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP),  # add these layers
-    options = layersControlOptions(collapsed = FALSE)  # expand on hover?
-)
+    overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP, sports_sites$FacTypeDescription),  # add these layers
+    options = layersControlOptions(collapsed = FALSE) 
+    # expand on hover?
+) %>%
+hideGroup(c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP, sports_sites$FacTypeDescription))
+#,
+#popup = paste("Facility type:", sports_sites$FacTypeDescription, "\n", "Site name:", sports_sites$SiteName)
