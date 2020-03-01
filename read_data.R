@@ -10,9 +10,11 @@ library("rgdal")
 library("sp")
 library("stringr")
 library("ggmap")
+# install.packages("formatR")
+# library("formatR")
 
 # Read in data ------------------------------------------------------------
-setwd("data")
+setwd("C:\\Source\\Manchester_map\\data")
 
 # postcode converter https://www.freemaptools.com/convert-uk-postcode-to-lat-lng.htm
 
@@ -98,7 +100,8 @@ leaflet() %>%
                     lng = puregym$Long,
                     group = puregym$X,
                     icon = awesomeIcons(icon = "heartbeat",
-                                        library = "fa")
+                                        library = "fa"),
+                    popup = puregym$X
                     ) %>%
   # transport
   addAwesomeMarkers(lat = tram$GPSLAT,
@@ -113,14 +116,14 @@ leaflet() %>%
                     group = train$NETTYP,
                     icon = awesomeIcons(icon = "train",
                                         library = "fa"),
-                    popup = train$RSTNAM
+                    popup = str_to_title(train$RSTNAM)
                     ) %>%
   addAwesomeMarkers(lat = sports_sites$Latitude,
                     lng = sports_sites$Longitude,
                     group = sports_sites$FacTypeDescription,
                     icon = awesomeIcons(icon ="heart",
                                         library = "fa"),
-                    popup = paste("Facility type:", sports_sites$FacTypeDescription, "\n", "Site name:", sports_sites$SiteName)
+                    popup = paste("<b> Facility type: </b>", sports_sites$FacTypeDescription, "<br/>", "<b>Site name:</b>", str_to_title(sports_sites$SiteName))
                     ) %>%
   addPolygons(data = imd,
               group = "IMD",
@@ -128,7 +131,12 @@ leaflet() %>%
               fillOpacity = 0.5,
               color = "grey",
               weight = 0.5,
-              label = ~lsoa11nm) %>%
+              label = ~lsoa11nm,
+              popup = ~paste("<b> Index of Multiple Deprivation Decile: </b>", IMDDecil)) %>%
+#  addLegend("bottomleft", pal = pal, values = imd$IMDDecil,
+#            title = "Index of Multiple Deprivation Decile",
+#            opacity = 1
+#  )
   addPolygons(data = lsoa_map,
               group = "Average House Price",
               fillColor = ~pal2(average),
@@ -136,7 +144,12 @@ leaflet() %>%
               color = "grey",
               weight = 0.5,
               label = ~lsoa11nm,
-              popup = ~paste0("Average house price: £", average)) %>%
+              popup = ~paste0("<b> Average house price:</b> £", average)) %>% #TEST
+#  addLegend("bottomleft", pal = pal2, values = lsoa_map$average,
+#            title = "Average house price",
+#            labFormat = labelFormat(prefix = "£"),
+#            opacity = 1
+#  ) %>%
   addLayersControl(
     baseGroups = c("Average House Price", "IMD"),
     overlayGroups = c(supermarkets$supermarket, puregym$X, tram$NETTYP, train$NETTYP, sports_sites$FacTypeDescription),  # add these layers
