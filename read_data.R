@@ -90,7 +90,8 @@ leaflet() %>%
                     lng = supermarkets$Long, 
                     group = supermarkets$supermarket,
                     icon = awesomeIcons(icon ="shopping-cart",
-                                        library = "fa")
+                                        library = "fa"),
+                    popup = supermarkets$supermarket
                     ) %>%
   # gyms
   addAwesomeMarkers(lat = puregym$Lat,
@@ -104,13 +105,15 @@ leaflet() %>%
                     lng = tram$GPSLON,
                     group = tram$NETTYP,
                     icon = awesomeIcons(icon = "subway",
-                                        library = "fa")
+                                        library = "fa"),
+                    popup = tram$RSTNAM
                     ) %>%
   addAwesomeMarkers(lat = train$GPSLAT,
                     lng = train$GPSLON,
                     group = train$NETTYP,
                     icon = awesomeIcons(icon = "train",
-                                        library = "fa")
+                                        library = "fa"),
+                    popup = train$RSTNAM
                     ) %>%
   addAwesomeMarkers(lat = sports_sites$Latitude,
                     lng = sports_sites$Longitude,
